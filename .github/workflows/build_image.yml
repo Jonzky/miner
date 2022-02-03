@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   main:
-    runs-on: buildjet-8vcpu-ubuntu-2004
+    runs-on: ubuntu-20.04
     permissions:
       packages: write
       contents: read
