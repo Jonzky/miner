@@ -1,12 +1,10 @@
 ARG BUILDER_IMAGE=arm64v8/erlang:24-alpine
 ARG RUNNER_IMAGE=arm64v8/alpine:3.15
-FROM erlang:24-alpine as builder
+FROM arm64v8/erlang:24-alpine as builder
 
 ARG REBAR_DIAGNOSTIC=0
 ENV DIAGNOSTIC=${REBAR_DIAGNOSTIC}
 
-ARG REBAR_BUILD_TARGET=docker
-ARG TAR_PATH=_build/$REBAR_BUILD_TARGET/rel/*/*.tar.gz
 RUN apk add --no-cache --update git tar build-base linux-headers autoconf automake libtool pkgconfig dbus-dev bzip2 bison flex gmp-dev cmake lz4 libsodium-dev openssl-dev sed wget curl
 
 # Install Rust toolchain
@@ -29,7 +27,7 @@ ARG VERSION=2022.01.29.0_GA
 ARG BUILD_NET=mainnet
 ENV DIAGNOSTIC=${REBAR_DIAGNOSTIC}
 
-ARG TAR_PATH=_build/$REBAR_BUILD_TARGET/rel/*/*.tar.gz
+ARG TAR_PATH=_build/docker/rel/*/*.tar.gz
 
 # Now add our code
 COPY . .
