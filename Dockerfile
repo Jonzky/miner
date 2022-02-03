@@ -1,19 +1,13 @@
-ARG BUILDER_IMAGE=erlang:24-alpine
-ARG RUNNER_IMAGE=alpine
-FROM ${BUILDER_IMAGE} as deps-compiler
+ARG BUILDER_IMAGE=arm64v8/erlang:24-alpine
+ARG RUNNER_IMAGE=arm64v8/alpine:3.15
+FROM erlang:24-alpine as builder
 
 ARG REBAR_DIAGNOSTIC=0
 ENV DIAGNOSTIC=${REBAR_DIAGNOSTIC}
 
-ARG REBAR_BUILD_TARGET
+ARG REBAR_BUILD_TARGET=docker
 ARG TAR_PATH=_build/$REBAR_BUILD_TARGET/rel/*/*.tar.gz
-ARG EXTRA_BUILD_APK_PACKAGES
-
-RUN apk add --no-cache --update \
-    git tar build-base linux-headers autoconf automake libtool pkgconfig \
-    dbus-dev bzip2 bison flex gmp-dev cmake lz4 libsodium-dev openssl-dev \
-    sed wget curl \
-    ${EXTRA_BUILD_APK_PACKAGES}
+RUN apk add --no-cache --update git tar build-base linux-headers autoconf automake libtool pkgconfig dbus-dev bzip2 bison flex gmp-dev cmake lz4 libsodium-dev openssl-dev sed wget curl
 
 # Install Rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -28,24 +22,19 @@ ENV CC=gcc CXX=g++ CFLAGS="-U__sun__" \
 
 # Add and compile the dependencies to cache
 COPY ./rebar* ./
-
 RUN ./rebar3 compile
 
-FROM deps-compiler as builder
+ARG VERSION=2022.01.29.0_GA
 
-ARG VERSION
-ARG REBAR_DIAGNOSTIC=0
-# default to building for mainnet
 ARG BUILD_NET=mainnet
 ENV DIAGNOSTIC=${REBAR_DIAGNOSTIC}
 
-ARG REBAR_BUILD_TARGET
 ARG TAR_PATH=_build/$REBAR_BUILD_TARGET/rel/*/*.tar.gz
 
 # Now add our code
 COPY . .
 
-RUN ./rebar3 as ${REBAR_BUILD_TARGET} tar -n miner -v ${VERSION}
+RUN ./rebar3 as docker tar -n miner 
 
 RUN mkdir -p /opt/docker/update
 RUN tar -zxvf ${TAR_PATH} -C /opt/docker
@@ -53,13 +42,10 @@ RUN wget -O /opt/docker/update/genesis https://snapshots.helium.wtf/genesis.${BU
 
 FROM ${RUNNER_IMAGE} as runner
 
-ARG VERSION
-ARG EXTRA_RUNNER_APK_PACKAGES
+ARG VERSION= 2022.01.29.0_GA
 
-RUN apk add --no-cache --update ncurses dbus libsodium libstdc++ \
-                                ${EXTRA_RUNNER_APK_PACKAGES}
-
-RUN ulimit -n 64000
+RUN apk add --no-cache --update ncurses dbus libsodium libstdc++
+RUN ulimit -n 128000
 
 WORKDIR /opt/miner
 
@@ -71,9 +57,10 @@ ENV COOKIE=miner \
 
 COPY --from=builder /opt/docker /opt/miner
 
+COPY start-miner.sh /opt/miner
+
 RUN ln -sf /opt/miner/releases/${VERSION} /config
 
 VOLUME ["/opt/miner/hotfix", "/var/data"]
 
-ENTRYPOINT ["/opt/miner/bin/miner"]
-CMD ["foreground"]
+ENTRYPOINT ["/opt/miner/start_miner.sh"]
