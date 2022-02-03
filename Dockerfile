@@ -22,7 +22,7 @@ ENV CC=gcc CXX=g++ CFLAGS="-U__sun__" \
 COPY ./rebar* ./
 RUN ./rebar3 compile
 
-ARG VERSION=2022.01.29.0_GA
+ARG VERSION=2022.01.29.0
 
 ARG BUILD_NET=mainnet
 ENV DIAGNOSTIC=${REBAR_DIAGNOSTIC}
@@ -40,7 +40,7 @@ RUN wget -O /opt/docker/update/genesis https://snapshots.helium.wtf/genesis.${BU
 
 FROM ${RUNNER_IMAGE} as runner
 
-ARG VERSION= 2022.01.29.0_GA
+ARG VERSION= 2022.01.29.0
 
 RUN apk add --no-cache --update ncurses dbus libsodium libstdc++
 RUN ulimit -n 128000
@@ -55,7 +55,7 @@ ENV COOKIE=miner \
 
 COPY --from=builder /opt/docker /opt/miner
 
-COPY start-miner.sh /opt/miner
+COPY *.sh /opt/miner/
 
 RUN ln -sf /opt/miner/releases/${VERSION} /config
 
