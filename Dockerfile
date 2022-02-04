@@ -42,8 +42,6 @@ FROM ${RUNNER_IMAGE} as runner
 
 ARG VERSION=2022.01.29.0
 
-RUN ulimit -n 128000
-
 RUN apk add --no-cache --update ncurses dbus libsodium libstdc++
 # RUN ulimit -n 128000
 
