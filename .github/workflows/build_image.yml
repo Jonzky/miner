@@ -77,7 +77,7 @@ jobs:
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
             RUNNER_IMAGE=arm64v8/alpine:3.15
             REBAR_BUILD_TARGET=docker
-            VERSION=2022.01.29.0
+            VERSION=2022.01.29.0_GA
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
