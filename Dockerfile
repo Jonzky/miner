@@ -32,7 +32,7 @@ ARG TAR_PATH=_build/docker/rel/*/*.tar.gz
 # Now add our code
 COPY . .
 
-RUN ./rebar3 as docker tar -n miner 
+RUN ./rebar3 as docker tar -n miner -v ${VERSION}
 
 RUN mkdir -p /opt/docker/update
 RUN tar -zxvf ${TAR_PATH} -C /opt/docker
@@ -40,7 +40,9 @@ RUN wget -O /opt/docker/update/genesis https://snapshots.helium.wtf/genesis.${BU
 
 FROM ${RUNNER_IMAGE} as runner
 
-ARG VERSION= 2022.01.29.0
+ARG VERSION=2022.01.29.0
+
+RUN ulimit -n 128000
 
 RUN apk add --no-cache --update ncurses dbus libsodium libstdc++
 # RUN ulimit -n 128000
