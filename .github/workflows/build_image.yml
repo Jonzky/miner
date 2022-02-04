@@ -76,7 +76,8 @@ jobs:
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
             RUNNER_IMAGE=arm64v8/alpine:3.15
-            REBAR_BUILD_TARGET=docker"
+            REBAR_BUILD_TARGET=docker
+            VERSION=2022.01.29.0
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
