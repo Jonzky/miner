@@ -61,4 +61,4 @@ RUN ln -sf /opt/miner/releases/${VERSION} /config
 
 VOLUME ["/opt/miner/hotfix", "/var/data"]
 
-ENTRYPOINT ["/opt/miner/start_miner.sh"]
+ENTRYPOINT ["/opt/miner/start-miner.sh"]
