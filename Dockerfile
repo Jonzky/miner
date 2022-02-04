@@ -2,6 +2,7 @@ ARG BUILDER_IMAGE=arm64v8/erlang:24-alpine
 ARG RUNNER_IMAGE=arm64v8/alpine:3.15
 FROM arm64v8/erlang:24-alpine as builder
 
+ARG HELIUM_GA_RELEASE=2022.01.29.0
 ARG REBAR_DIAGNOSTIC=0
 ENV DIAGNOSTIC=${REBAR_DIAGNOSTIC}
 
@@ -32,6 +33,7 @@ ARG TAR_PATH=_build/docker/rel/*/*.tar.gz
 # Now add our code
 COPY . .
 
+ARG VERSION
 RUN ./rebar3 as docker tar -n miner -v ${VERSION}
 
 RUN mkdir -p /opt/docker/update
@@ -58,6 +60,10 @@ COPY --from=builder /opt/docker /opt/miner
 COPY *.sh /opt/miner/
 
 RUN ln -sf /opt/miner/releases/${VERSION} /config
+
+ARG HELIUM_GA_RELEASE
+ENV HELIUM_GA_RELEASE $HELIUM_GA_RELEASE
+RUN echo "$HELIUM_GA_RELEASE" > /etc/lsb_release
 
 VOLUME ["/opt/miner/hotfix", "/var/data"]
 
