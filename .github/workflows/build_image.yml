@@ -1,6 +1,8 @@
 name: Compile Docker Images
 
-on: [push]
+on:
+  release:
+    types: [published]
 
 jobs:
   start-runner:
@@ -72,12 +74,12 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            VERSION=2022.01.29.0_GA
             EXTRA_BUILD_APK_PACKAGES=apk-tools
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
             RUNNER_IMAGE=arm64v8/alpine:3.15
             REBAR_BUILD_TARGET=docker
-            VERSION=2022.01.29.0_GA
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

@@ -45,7 +45,7 @@ ARG TAR_PATH=_build/$REBAR_BUILD_TARGET/rel/*/*.tar.gz
 # Now add our code
 COPY . .
 
-RUN ./rebar3 as ${REBAR_BUILD_TARGET} tar -n miner -v ${VERSION}
+RUN ./rebar3 as ${REBAR_BUILD_TARGET} tar -n miner
 
 RUN mkdir -p /opt/docker/update
 RUN tar -zxvf ${TAR_PATH} -C /opt/docker
