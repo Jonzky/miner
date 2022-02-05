@@ -45,7 +45,7 @@ ARG TAR_PATH=_build/$REBAR_BUILD_TARGET/rel/*/*.tar.gz
 # Now add our code
 COPY . .
 
-RUN ./rebar3 as ${REBAR_BUILD_TARGET} tar -n miner
+RUN ./rebar3 as ${REBAR_BUILD_TARGET} tar -n miner -v ${VERSION}
 
 RUN mkdir -p /opt/docker/update
 RUN tar -zxvf ${TAR_PATH} -C /opt/docker
@@ -59,6 +59,8 @@ ARG EXTRA_RUNNER_APK_PACKAGES
 RUN apk add --no-cache --update ncurses dbus libsodium libstdc++ \
                                 ${EXTRA_RUNNER_APK_PACKAGES}
 
+RUN ulimit -n 128000
+
 WORKDIR /opt/miner
 
 ENV COOKIE=miner \
@@ -68,7 +70,6 @@ ENV COOKIE=miner \
     PATH=$PATH:/opt/miner/bin
 
 COPY --from=builder /opt/docker /opt/miner
-
 COPY *.sh /opt/miner/
 RUN ln -sf /opt/miner/releases/${VERSION} /config
 
