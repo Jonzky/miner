@@ -6,13 +6,6 @@ on:
       - '*'
 
 jobs:
-  get-tags:
-    - name: Get tag
-      id: tag
-      uses: dawidd6/action-get-tag@v1
-      with:
-        strip_v: true
-
   start-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
@@ -73,6 +66,12 @@ jobs:
           tags: |
             type=sha,prefix=
             type=sha,format=long,prefix=
+
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: true
 
       - name: Build and push
         id: docker_build
