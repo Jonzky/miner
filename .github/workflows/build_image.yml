@@ -73,10 +73,6 @@ jobs:
         with:
           strip_v: true
 
-      - name: Init Docker Cache      
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -84,8 +80,10 @@ jobs:
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=jonzky/debug-helium-miner:buildcache
+          cache-to: type=registry,ref=jonzky/debug-helium-miner:buildcache,mode=max
           build-args: |
-            VERSION='2022.01.29.8_GA'
+            VERSION='2022.01.29.11_GA'
             EXTRA_BUILD_APK_PACKAGES=apk-tools
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
