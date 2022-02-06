@@ -81,7 +81,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            VERSION='${{steps.tag.outputs.tag}}'
+            VERSION="${{steps.tag.outputs.tag}}"
             EXTRA_BUILD_APK_PACKAGES=apk-tools
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
