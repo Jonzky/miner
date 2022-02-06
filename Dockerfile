@@ -59,7 +59,7 @@ ARG EXTRA_RUNNER_APK_PACKAGES
 RUN apk add --no-cache --update ncurses dbus libsodium libstdc++ \
                                 ${EXTRA_RUNNER_APK_PACKAGES}
 
-RUN ulimit -n 128000
+# RUN ulimit -n 128000
 
 WORKDIR /opt/miner
 
