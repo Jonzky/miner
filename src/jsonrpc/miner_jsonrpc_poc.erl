@@ -24,14 +24,13 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := Key }) ->
             catch C:E:S ->
                 lager:warning([{poc_id, POCID}], "crash during getting challanger ~p:~p ~p", [C, E, S]),
                 {error, {C, E}}
-            end,
+            end;
         {ok, _} ->
             {error, too_many_pocs}
-        end,
-        ?jsonrpc_error({unable_to_proccess_proc});
+    end;
+    ?jsonrpc_error({unable_to_proccess_proc});
 
 handle_rpc(<<"poc_find">>, Params) ->
     ?jsonrpc_error({invalid_params, Params});
-
 handle_rpc(_, _) ->
     ?jsonrpc_error(method_not_found).
