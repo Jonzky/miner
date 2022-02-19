@@ -18,19 +18,17 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := Key }) ->
             not_found;
         {ok, [PoC]} ->
             lager:info([{poc_id, POCID}], "found poc. attempting to decrypt", []),
-            try blockchain_ledger_poc_v2:challenger(PoC) of
-                error ->
-                    {error, failed_find_poc};
-                {Challenger} ->
-                    {ok, Challenger}
+            try 
+                Challanger = blockchain_ledger_poc_v2:challenger(PoC),
+                {ok, Challenger}
             catch C:E:S ->
-                lager:warning([{poc_id, POCID}], "crash during decrypt ~p:~p ~p", [C, E, S]),
+                lager:warning([{poc_id, POCID}], "crash during getting challanger ~p:~p ~p", [C, E, S]),
                 {error, {C, E}}
-            end;
-            {ok, _} ->
-                {error, too_many_pocs}
+            end,
+        {ok, _} ->
+            {error, too_many_pocs}
         end,
-    {"testmessage"}
+        ?jsonrpc_error({unable_to_proccess_proc});
 
 handle_rpc(<<"poc_find">>, Params) ->
     ?jsonrpc_error({invalid_params, Params});
