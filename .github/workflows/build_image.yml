@@ -79,8 +79,8 @@ jobs:
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=jonzky/debug-helium-miner:buildcache
-          cache-to: type=registry,ref=jonzky/debug-helium-miner:buildcache,mode=max
+          cache-from: type=registry,ref=docker.io/jonzky/debug-helium-miner:buildcache
+          cache-to: type=registry,ref=docker.io/jonzky/debug-helium-miner:buildcache,mode=max
           build-args: |
             VERSION='2022.01.29.12_GA'
             REBAR_BUILD_TARGET=docker
