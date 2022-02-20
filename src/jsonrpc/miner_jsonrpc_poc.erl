@@ -26,10 +26,10 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := Key }) ->
             end;
         {ok, _} ->
             {error, too_many_pocs}
-    end.
+    end;
 
-% handle_rpc(<<"poc_find">>, Params) ->
-%     ?jsonrpc_error({invalid_params, Params});
+handle_rpc(<<"poc_find">>, Params) ->
+    ?jsonrpc_error({invalid_params, Params});
 
 handle_rpc(_, _) ->
     ?jsonrpc_error(method_not_found).
