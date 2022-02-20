@@ -89,7 +89,7 @@ jobs:
           cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
           cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
           build-args: |
-            VERSION='2022.02.18.1'
+            VERSION='2022.02.18.2'
             REBAR_BUILD_TARGET=miner
 
       - name: Image digest
