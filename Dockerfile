@@ -1,5 +1,5 @@
-ARG BUILDER_IMAGE=erlang:24-alpine
-ARG RUNNER_IMAGE=alpine
+ARG BUILDER_IMAGE=arm64v8/erlang:24-alpine
+ARG RUNNER_IMAGE=arm64v8/alpine
 FROM ${BUILDER_IMAGE} as deps-compiler
 
 ARG REBAR_DIAGNOSTIC=0
