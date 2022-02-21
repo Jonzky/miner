@@ -58,7 +58,8 @@ get_payload(DataPacket) ->
 
     case longfi:deserialize(DataPacket) of
         error ->
-            lager:error("Failed to deserialise the packet ~p", [DataPacket])
+            lager:error("Failed to deserialise the packet ~p", [DataPacket]),
+            {error, failure};
         {ok, LongFiPkt} ->
             try longfi:type(LongFiPkt) == monolithic andalso longfi:oui(LongFiPkt) == 0 andalso longfi:device_id(LongFiPkt) == 1 of
                 true ->
@@ -67,7 +68,7 @@ get_payload(DataPacket) ->
                     lager:error("Failed to validate the packet ~p", [DataPacket])
             catch a:b ->
                 lager:error("Error thrown in get_payload ~p - ~p", [a, b])
-            end,
+            end
     end,
     {error, failure}.
 
