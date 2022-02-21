@@ -11,7 +11,6 @@
 handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
     try
         lager:info([{poc_id}], "Request received to get PoC - ~p", [DataPacket]),
-
         case get_payload(DataPacket) of 
 
             {ok, Payload} ->
@@ -34,7 +33,7 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
             {error, _} ->
                 lager:error([{poc_id}], "Failed proccess data packet - ~p", [DataPacket]),
                 ?jsonrpc_error({failed_proccess_packet, DataPacket})
-        end,
+        end
     catch
         _:_ ->
             lager:error([{poc_id}], "Failed to get PoC - ~p", [DataPacket]),
@@ -47,6 +46,10 @@ handle_rpc(<<"poc_find">>, Params) ->
 
 handle_rpc(_, _) ->
     ?jsonrpc_error(method_not_found).
+
+%%%===================================================================
+%%% Internal functions
+%%%===================================================================
 
 
 get_payload(DataPacket) ->
