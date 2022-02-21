@@ -53,10 +53,10 @@ handle_rpc(_, _) ->
 
 
 get_payload(DataPacket) ->
-    BinaryData = ?B64_TO_BIN(DataPacket),
+    BinaryData = base64:decode(DataPacket),
     lager:info("Packet converted to binary"),
 
-    case longfi:deserialize(DataPacket) of
+    case longfi:deserialize(BinaryData) of
         error ->
             lager:error("Failed to deserialise the packet ~p", [DataPacket]),
             {error, failure};
