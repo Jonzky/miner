@@ -11,14 +11,14 @@
 
 handle_rpc(<<"poc_find">>, #{ <<"key">> := DataMessage }) ->
     try
-        lager:info([{poc_id}], "Request received to get PoC - ~p", [Key]),
+        lager:info([{poc_id}], "Request received to get PoC - ~p", [DataMessage]),
         BinMessage = ?B64_TO_BIN(DataMessage),
         BinKey = get_onion_key(BinMessage),                            
         POCID = blockchain_utils:poc_id(BinKey),
         OnionKeyHash = crypto:hash(sha256, BinKey),
-        lager:info([{poc_id}], "Getting Blockchain - ~p", [Key]),
+        lager:info([{poc_id}], "Getting Blockchain - ~p", [DataMessage]),
         Ledger = blockchain:ledger(blockchain:blockchain()),
-        lager:info([{poc_id}], "Looking it up - ~p", [Key]),
+        lager:info([{poc_id}], "Looking it up - ~p", [DataMessage]),
         case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
             {error, not_found} ->
                 not_found;
@@ -31,8 +31,8 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataMessage }) ->
         end
     catch
         _:_ ->
-            lager:info([{poc_id}], "Failed to get PoC - ~p", [Key]),
-            ?jsonrpc_error({invalid_params, Key})
+            lager:info([{poc_id}], "Failed to get PoC - ~p", [DataMessage]),
+            ?jsonrpc_error({invalid_params, DataMessage})
     end;
 
 
