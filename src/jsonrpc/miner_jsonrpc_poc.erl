@@ -9,10 +9,11 @@
 %%
 
 
-handle_rpc(<<"poc_find">>, #{ <<"key">> := Key }) ->
+handle_rpc(<<"poc_find">>, #{ <<"key">> := DataMessage }) ->
     try
         lager:info([{poc_id}], "Request received to get PoC - ~p", [Key]),
-        BinKey = ?B64_TO_BIN(Key),
+        BinMessage = ?B64_TO_BIN(DataMessage),
+        BinKey = get_onion_key(BinMessage),                            
         POCID = blockchain_utils:poc_id(BinKey),
         OnionKeyHash = crypto:hash(sha256, BinKey),
         lager:info([{poc_id}], "Getting Blockchain - ~p", [Key]),
@@ -40,3 +41,6 @@ handle_rpc(<<"poc_find">>, Params) ->
 
 handle_rpc(_, _) ->
     ?jsonrpc_error(method_not_found).
+
+get_onion_key({ <<_:2/binary, OnionCompactKey:33/binary>>}) ->
+                                  {OnionCompactKey}.
