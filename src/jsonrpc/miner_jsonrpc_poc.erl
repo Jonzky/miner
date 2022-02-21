@@ -11,7 +11,11 @@
 handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
     try
         lager:info([{poc_id}], "Request received to get PoC - ~p", [DataPacket]),
-        case get_payload(DataPacket) of 
+
+        BinaryData = base64:decode(DataPacket),
+        lager:info("Packet converted to binary"),
+    
+        case get_payload(BinaryData) of 
 
             {ok, Payload} ->
                 BinKey = get_onion_key(Payload),                            
@@ -51,28 +55,23 @@ handle_rpc(_, _) ->
 %%% Internal functions
 %%%===================================================================
 
-
-get_payload(DataPacket) ->
-    BinaryData = base64:decode(DataPacket),
-    lager:info("Packet converted to binary"),
-
+-spec get_payload(binary()) -> any().
+get_payload(BinaryData) ->
     case longfi:deserialize(BinaryData) of
         error ->
-            lager:error("Failed to deserialise the packet ~p", [DataPacket]),
+            lager:error("Failed to deserialise the packet", []),
             {error, failure};
         {ok, LongFiPkt} ->
             try longfi:type(LongFiPkt) == monolithic andalso longfi:oui(LongFiPkt) == 0 andalso longfi:device_id(LongFiPkt) == 1 of
                 true ->
                     {ok, longfi:payload(LongFiPkt)};
                 false ->
-                    lager:error("Failed to validate the packet ~p", [DataPacket])
+                    lager:error("Failed to validate the packet", [])
             catch a:b ->
                 lager:error("Error thrown in get_payload ~p - ~p", [a, b])
             end
     end,
     {error, failure}.
-
-
 
 
 get_onion_key({ <<_:2/binary, OnionCompactKey:33/binary>>}) ->
