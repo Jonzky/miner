@@ -8,7 +8,6 @@
 %% jsonrpc_handler
 %%
 
-
 handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
     try
         lager:info([{poc_id}], "Request received to get PoC - ~p", [DataPacket]),
@@ -16,7 +15,7 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
         case get_payload(DataPacket) of 
 
             {ok, Payload} ->
-                BinKey = get_onion_key(BinMessage),                            
+                BinKey = get_onion_key(Payload),                            
                 POCID = blockchain_utils:poc_id(BinKey),
                 OnionKeyHash = crypto:hash(sha256, BinKey),
                 lager:info([{poc_id}], "Getting Blockchain - ~p", [DataPacket]),
@@ -33,13 +32,13 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                         {error, too_many_pocs}
                 end;
             {error, _} ->
-                lager:error([{poc_id}], "Failed proccess data packet - ~p", [DataMessage]),
-                ?jsonrpc_error({failed_proccess_packet, DataMessage})
-        end;
+                lager:error([{poc_id}], "Failed proccess data packet - ~p", [DataPacket]),
+                ?jsonrpc_error({failed_proccess_packet, DataPacket})
+        end,
     catch
         _:_ ->
-            lager:error([{poc_id}], "Failed to get PoC - ~p", [DataMessage]),
-            ?jsonrpc_error({invalid_params, DataMessage})
+            lager:error([{poc_id}], "Failed to get PoC - ~p", [DataPacket]),
+            ?jsonrpc_error({invalid_params, DataPacket})
     end;
 
 
@@ -57,7 +56,7 @@ get_payload(DataPacket) ->
         {onion, Payload} ->
             {ok, Payload};
         {noop, non_longfi} ->
-            lager:debug("Unable to get PoC on non Lofi packet ~p", [DataPacket])
+            lager:error("Unable to get PoC on non Longfi packet ~p", [DataPacket])
     end,
     {error, failure}.
     
