@@ -8,26 +8,31 @@
 %% jsonrpc_handler
 %%
 
-handle_rpc(<<"poc_find">>, #{ <<"key">> := Key }) ->
 
-    KeyBin = blockchain_utils:hex_to_bin(Key),
-    POCID = blockchain_utils:poc_id(KeyBin),
-    OnionKeyHash = crypto:hash(sha256, KeyBin),
-    Ledger = blockchain:ledger(blockchain:blockchain()),
-    case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
-        {error, not_found} ->
-            not_found;
-        {ok, [PoC]} ->
-            lager:info([{poc_id, POCID}], "found poc. attempting to decrypt", []),
-            try 
+handle_rpc(<<"poc_find">>, #{ <<"hash">> := Hash }) ->
+    try
+        lager:info([{poc_id}], "Request received to get PoC - ~p", [Hash]),
+        BinKey = ?B64_TO_BIN(Hash),            
+        POCID = blockchain_utils:poc_id(BinKey),
+        OnionKeyHash = crypto:hash(sha256, BinKey),
+        lager:info([{poc_id}], "Getting Blockchain - ~p", [Hash]),
+        Ledger = blockchain:ledger(blockchain:blockchain()),
+        lager:info([{poc_id}], "Looking it up - ~p", [Hash]),
+        case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
+            {error, not_found} ->
+                not_found;
+            {ok, [PoC]} ->
+                lager:info([{poc_id, POCID}], "found poc. attempting to decrypt", []),
                 {ok, blockchain_ledger_poc_v2:challenger(PoC)}
-            catch errormessage ->
-                lager:warning([{poc_id, POCID}], "crash during getting challanger ~p", [errormessage]),
-                {error, errormessage}
-            end;
-        {ok, _} ->
-            {error, too_many_pocs}
+            {ok, _} ->
+                {error, too_many_pocs}
+        end;
+    catch
+        _:_ ->
+            lager:info([{poc_id}], "Failed to get PoC - ~p", [Hash]),
+            ?jsonrpc_error({invalid_params, Key})
     end;
+
 
 handle_rpc(<<"poc_find">>, Params) ->
     ?jsonrpc_error({invalid_params, Params});
