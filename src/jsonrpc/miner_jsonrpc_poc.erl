@@ -53,7 +53,8 @@ handle_rpc(_, _) ->
 
 
 get_payload(DataPacket) ->
-    case miner_lora:route(DataPacket) of
+    BinaryData =  ?B64_TO_BIN(DataPacket),
+    case miner_lora:route(BinaryData) of
         error ->
             {error, failure};
         {onion, Payload} ->
