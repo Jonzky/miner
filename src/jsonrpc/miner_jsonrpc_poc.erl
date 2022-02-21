@@ -10,8 +10,9 @@
 
 handle_rpc(<<"poc_find">>, #{ <<"key">> := Key }) ->
 
-    POCID = blockchain_utils:poc_id(Key),
-    OnionKeyHash = crypto:hash(sha256, Key),
+    KeyBin = blockchain_utils:hex_to_bin(Key),
+    POCID = blockchain_utils:poc_id(KeyBin),
+    OnionKeyHash = crypto:hash(sha256, KeyBin),
     Ledger = blockchain:ledger(blockchain:blockchain()),
     case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
         {error, not_found} ->

@@ -86,10 +86,10 @@ jobs:
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
-          # cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
-          # cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
+          cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
+          cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
           build-args: |
-            VERSION=2022.02.18.7
+            VERSION=2022.02.18.8
             EXTRA_BUILD_APK_PACKAGES=apk-tools
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
