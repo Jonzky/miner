@@ -89,7 +89,7 @@ jobs:
           cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
           cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
           build-args: |
-            VERSION=2022.02.18.22
+            VERSION=2022.02.18.23
             EXTRA_BUILD_APK_PACKAGES=apk-tools
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
