@@ -12,7 +12,7 @@
 handle_rpc(<<"poc_find">>, #{ <<"hash">> := Hash }) ->
     try
         lager:info([{poc_id}], "Request received to get PoC - ~p", [Hash]),
-        BinKey = ?B64_TO_BIN(Hash),            
+        BinKey = ?B64_TO_BIN(Hash),
         POCID = blockchain_utils:poc_id(BinKey),
         OnionKeyHash = crypto:hash(sha256, BinKey),
         lager:info([{poc_id}], "Getting Blockchain - ~p", [Hash]),
@@ -23,10 +23,11 @@ handle_rpc(<<"poc_find">>, #{ <<"hash">> := Hash }) ->
                 not_found;
             {ok, [PoC]} ->
                 lager:info([{poc_id, POCID}], "found poc. attempting to decrypt", []),
-                {ok, blockchain_ledger_poc_v2:challenger(PoC)}
+                Challanger = blockchain_ledger_poc_v2:challenger(PoC),
+                {ok, Challanger};
             {ok, _} ->
                 {error, too_many_pocs}
-        end;
+        end
     catch
         _:_ ->
             lager:info([{poc_id}], "Failed to get PoC - ~p", [Hash]),
