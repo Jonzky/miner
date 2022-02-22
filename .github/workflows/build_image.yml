@@ -105,7 +105,7 @@ jobs:
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           repository: Jonzky/hm-miner
           event-type: miner-built
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "digest": "${{ steps.docker_build.outputs.digest }}", "build_tag": "${{steps.tag.outputs.tag}}"}'
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "digest": "@${{ steps.docker_build.outputs.digest }}", "build_tag": "${{steps.tag.outputs.tag}}"}'
 
   stop-runner:
     name: Stop self-hosted EC2 runner
