@@ -38,10 +38,11 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                         not_found;
                     {ok, [PoC]} ->
                         lager:info([{POCID}], "found poc. attempting to decrypt", []),
-                        Challanger = blockchain_ledger_poc_v2:challenger(PoC),
-                        {ok, Challanger};
+                        Challenger = blockchain_ledger_poc_v2:challenger(PoC),
+                        EncodedChallenger = base64:encode(Challenger),
+                        {ok, EncodedChallenger};
                     {ok, _} ->
-                        lager:error("Error too many pocs up - ~p", [DataPacket]),
+                        lager:error("Error too many  pocs up - ~p", [DataPacket]),
                         {error, too_many_pocs}
                 end;
             {error, other} ->
