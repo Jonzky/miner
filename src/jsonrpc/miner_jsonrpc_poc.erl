@@ -19,7 +19,7 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
 
             {ok, Payload} ->
 
-                <<IV:2/binary, OnionCompactKey:33/binary, Tag:4/binary, CipherText/binary>> = Data,
+                <<IV:2/binary, OnionCompactKey:33/binary, Tag:4/binary, CipherText/binary>> = Payload,
 
                 POCID = blockchain_utils:poc_id(OnionCompactKey),
                 OnionKeyHash = crypto:hash(sha256, OnionCompactKey),
