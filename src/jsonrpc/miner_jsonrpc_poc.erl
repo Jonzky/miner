@@ -69,10 +69,11 @@ get_payload(BinaryData) ->
             {error, failure};
         {onion, Payload} ->
             lager:info("Got the payload!"),
-            {ok, Payload}
-    end,
-    lager:info("Shouldn't be hitting this?"),
-    {error, failure}.
+            {ok, Payload};
+        _Else ->
+            lager:error("Failed to match the output of route", []),
+            {error, failure}
+    end.
 
 get_onion_key({ <<_:2/binary, OnionCompactKey:33/binary>>}) ->
                                   {OnionCompactKey}.
