@@ -35,12 +35,12 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                         {error, too_many_pocs}
                 end;
             {error, _} ->
-                lager:error([{poc_id}], "Failed proccess data packet - ~p", [DataPacket]),
+                lager:error("Failed proccess data packet - ~p", [DataPacket]),
                 ?jsonrpc_error({failed_proccess_packet, DataPacket})
         end
     catch
         a:b ->
-            lager:error([{poc_id}], "Failed to get PoC - ~p  -  ~p", [a, b]),
+            lager:error("Failed to get PoC - ~p  -  ~p", [a, b]),
             ?jsonrpc_error({invalid_params, DataPacket})
     end;
 
@@ -57,22 +57,15 @@ handle_rpc(_, _) ->
 
 -spec get_payload(binary()) -> any().
 get_payload(BinaryData) ->
-    case longfi:deserialize(BinaryData) of
+    case miner_lora:route(BinaryData) of
         error ->
             lager:error("Failed to deserialise the packet", []),
             {error, failure};
-        {ok, LongFiPkt} ->
-            try longfi:type(LongFiPkt) == monolithic andalso longfi:oui(LongFiPkt) == 0 andalso longfi:device_id(LongFiPkt) == 1 of
-                true ->
-                    {ok, longfi:payload(LongFiPkt)};
-                false ->
-                    lager:error("Failed to validate the packet", [])
-            catch a:b ->
-                lager:error("Error thrown in get_payload ~p - ~p", [a, b])
-            end
+        {onion, Payload} ->
+            lager:info("Got the payload!"),
+            {ok, Payload}
     end,
     {error, failure}.
-
 
 get_onion_key({ <<_:2/binary, OnionCompactKey:33/binary>>}) ->
                                   {OnionCompactKey}.
