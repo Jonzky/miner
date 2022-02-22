@@ -77,8 +77,8 @@ jobs:
           tags: |
             type=sha,prefix=
             type=sha,format=long,prefix=
-            type=semver,pattern={{raw}}
-
+            type=raw,value=${{steps.tag.outputs.tag}}
+      
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
