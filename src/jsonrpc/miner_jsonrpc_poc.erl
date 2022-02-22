@@ -62,7 +62,6 @@ handle_rpc(_, _) ->
 %%% Internal functions
 %%%===================================================================
 
--spec get_payload(binary()) -> any().
 get_payload(BinaryData) ->
     case miner_lora:route(BinaryData) of
         error ->
@@ -72,6 +71,7 @@ get_payload(BinaryData) ->
             lager:info("Got the payload!"),
             {ok, Payload}
     end,
+    lager:info("Shouldn't be hitting this?"),
     {error, failure}.
 
 get_onion_key({ <<_:2/binary, OnionCompactKey:33/binary>>}) ->
