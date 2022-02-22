@@ -30,7 +30,7 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                 OnionKeyHash = crypto:hash(sha256, OnionCompactKey),
                 lager:info("Getting Blockchain - ~p", [DataPacket]),
                 BlockChain = blockchain_worker:blockchain(),
-                Ledger = blockchain:ledger(BlockChain)),
+                Ledger = blockchain:ledger(BlockChain),
                 lager:info("Looking it up - ~p", [DataPacket]),
                 case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
                     {error, not_found} ->
