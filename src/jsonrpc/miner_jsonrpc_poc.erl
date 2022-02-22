@@ -34,12 +34,14 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                 lager:info("Looking it up - ~p", [DataPacket]),
                 case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
                     {error, not_found} ->
+                        lager:error("Not found - ~p", [DataPacket]),
                         not_found;
                     {ok, [PoC]} ->
-                        lager:info([{poc_id, POCID}], "found poc. attempting to decrypt", []),
+                        lager:info([{POCID}], "found poc. attempting to decrypt", []),
                         Challanger = blockchain_ledger_poc_v2:challenger(PoC),
                         {ok, Challanger};
                     {ok, _} ->
+                        lager:error("Error too many pocs up - ~p", [DataPacket]),
                         {error, too_many_pocs}
                 end;
             {error, other} ->
