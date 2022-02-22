@@ -19,9 +19,14 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
 
             {ok, Payload} ->
 
+                lager:info("Inner Payload - ~p", [DataPacket]),
+
                 <<IV:2/binary, OnionCompactKey:33/binary, Tag:4/binary, CipherText/binary>> = Payload,
+                lager:info("Post bit manip - ~p", [DataPacket]),
 
                 POCID = blockchain_utils:poc_id(OnionCompactKey),
+                lager:info("Gotten the POCID - ~p", [DataPacket]),
+
                 OnionKeyHash = crypto:hash(sha256, OnionCompactKey),
                 lager:info("Getting Blockchain - ~p", [DataPacket]),
                 Ledger = blockchain:ledger(blockchain:blockchain()),
@@ -36,8 +41,8 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                     {ok, _} ->
                         {error, too_many_pocs}
                 end;
-            {error, _} ->
-                lager:error("Failed proccess data packet - ~p", [DataPacket]),
+            {error, other} ->
+                lager:error("Failed proccess data packet - ~p -- ~p", [DataPacket, other]),
                 ?jsonrpc_error({failed_proccess_packet, DataPacket})
         end
     catch
