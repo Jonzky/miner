@@ -37,10 +37,17 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: false
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: '${{ steps.tag.outputs.tag }}'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -70,12 +77,6 @@ jobs:
           tags: |
             type=sha,prefix=
             type=sha,format=long,prefix=
-
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-        with:
-          strip_v: true
 
       - name: Build and push
         id: docker_build
