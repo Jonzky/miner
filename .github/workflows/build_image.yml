@@ -37,10 +37,17 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: false
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: '${{ steps.tag.outputs.tag }}'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -70,14 +77,8 @@ jobs:
           tags: |
             type=sha,prefix=
             type=sha,format=long,prefix=
-
-      # - name: Get tag
-      #   id: tag
-      #   uses: dawidd6/action-get-tag@v1
-      #   with:
-      #     strip_v: true
-
-
+            type=raw,value=${{steps.tag.outputs.tag}}
+      
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -89,11 +90,24 @@ jobs:
           cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
           cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
           build-args: |
-            VERSION=2022.02.18.3
-            REBAR_BUILD_TARGET=miner
+            VERSION=${{steps.tag.outputs.tag}}
+            EXTRA_BUILD_APK_PACKAGES=apk-tools
+            EXTRA_RUNNER_APK_PACKAGES=apk-tools
+            BUILDER_IMAGE=arm64v8/erlang:24-alpine
+            RUNNER_IMAGE=arm64v8/alpine:3.15
+            REBAR_BUILD_TARGET=docker
+            BUILD_NET=mainnet
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          repository: Jonzky/hm-miner
+          event-type: miner-built
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "digest": "@${{ steps.docker_build.outputs.digest }}", "build_tag": "${{steps.tag.outputs.tag}}"}'
 
   stop-runner:
     name: Stop self-hosted EC2 runner
@@ -116,3 +130,5 @@ jobs:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           label: ${{ needs.start-runner.outputs.label }}
           ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
+
+  
