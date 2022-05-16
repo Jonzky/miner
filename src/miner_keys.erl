@@ -190,14 +190,18 @@ keys({ecc, Options}) when is_list(Options) ->
                 end,
                 onboarding_key => libp2p_crypto:pubkey_to_b58(OnboardingKey)
             }
-    end.
+    end;
+keys(#{pubkey := _PubKey, ecdh_fun := _ECDH, sig_fun := _Sig} = KeyInfo) ->
+    maps:merge(#{key_slot => undefined, bus => undefined, address => undefined}, KeyInfo).
 
 -spec key_config() -> key_configuration().
 key_config() ->
     BaseDir = application:get_env(blockchain, base_dir, "data"),
     case application:get_env(blockchain, key, undefined) of
-        undefined -> {file, BaseDir};
-        KC -> KC
+        undefined ->
+            {file, BaseDir};
+        KC ->
+            KC
     end.
 
 -spec libp2p_to_gateway_key(libp2p_crypto:key_map()) -> libp2p_crypto:key_map().
@@ -262,7 +266,7 @@ key_proplist_to_map(Options) when is_list(Options) ->
         address => proplists:get_value(address, Options, 16#60)
     }.
 
-%% Helper funtion to retry automatic keyslot key generation and
+%% Helper function to retry automatic keyslot key generation and
 %% locking the first time we encounter an empty keyslot.
 get_public_key(ECCPid, Slot) ->
     get_public_key(ECCPid, Slot, 20).

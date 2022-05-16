@@ -116,11 +116,11 @@ txn_in_sequence_nonce_test(Config) ->
     PayerAddr = Addr,
     Payee = hd(miner_ct_utils:shuffle(ConMiners)),
     PayeeAddr = miner_ct_utils:node2addr(Payee, AddrList),
-    {ok, _Pubkey, SigFun, _ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
+    {ok, Pubkey, SigFun, ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
 
     StartNonce = miner_ct_utils:get_nonce(Miner, Addr),
 
-    {ok, _Pubkey, SigFun, _ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
+    {ok, Pubkey, SigFun, ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
 
     %% the first txn
     Txn1 = ct_rpc:call(Miner, blockchain_txn_payment_v1, new, [PayerAddr, PayeeAddr, 1000, StartNonce+1]),
@@ -165,10 +165,10 @@ txn_out_of_sequence_nonce_test(Config) ->
     PayerAddr = Addr,
     Payee = hd(miner_ct_utils:shuffle(ConMiners)),
     PayeeAddr = miner_ct_utils:node2addr(Payee, AddrList),
-    {ok, _Pubkey, SigFun, _ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
+    {ok, Pubkey, SigFun, ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
 
     StartNonce = miner_ct_utils:get_nonce(Miner, Addr),
-    {ok, _Pubkey, SigFun, _ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
+    {ok, Pubkey, SigFun, ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
 
     %% the first txn
     Txn1 = ct_rpc:call(Miner, blockchain_txn_payment_v1, new, [PayerAddr, PayeeAddr, 1000, StartNonce+1]),
@@ -235,10 +235,10 @@ txn_invalid_nonce_test(Config) ->
     PayerAddr = Addr,
     Payee = hd(miner_ct_utils:shuffle(ConMiners)),
     PayeeAddr = miner_ct_utils:node2addr(Payee, AddrList),
-    {ok, _Pubkey, SigFun, _ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
+    {ok, Pubkey, SigFun, ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
 
     StartNonce = miner_ct_utils:get_nonce(Miner, Addr),
-    {ok, _Pubkey, SigFun, _ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
+    {ok, Pubkey, SigFun, ECDHFun} = ct_rpc:call(Miner, blockchain_swarm, keys, []),
 
     %% the first txn
     Txn1 = ct_rpc:call(Miner, blockchain_txn_payment_v1, new, [PayerAddr, PayeeAddr, 1000, StartNonce+1]),
@@ -320,7 +320,7 @@ txn_dependent_test(Config) ->
     {ok, Height} = ct_rpc:call(Miner, blockchain, height, [Chain]),
 
     %% send txns with nonces 2, 3 and 4, all out of sequence
-    %% we wont send txn with nonce 1 yet
+    %% we won't send txn with nonce 1 yet
     %% this means the 3 submitted txns cannot be accepted and will remain in the txn mgr cache
     %% until txn with nonce 1 gets submitted
     ok = ct_rpc:call(Miner, blockchain_worker, submit_txn, [SignedTxn2]),
