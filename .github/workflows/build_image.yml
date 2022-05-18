@@ -2,7 +2,8 @@ name: Compile Docker Images
 
 on:
   push:
-
+    tags:
+      - '**GA**'
 jobs:
   start-runner:
     name: Start self-hosted EC2 runner
