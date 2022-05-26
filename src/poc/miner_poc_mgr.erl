@@ -336,8 +336,10 @@ handle_add_block_event(POCChallengeType, BlockHash, Ledger, State) when POCChall
             %% take care of GC
             ok = purge_local_pocs(Block, Ledger, State),
 
-            %% GC local pocs keys every 50 blocks
-            case BlockHeight rem 50 == 0 of
+            %% GC local pocs keys every 101 blocks
+            %% this is tied to the GC cadence window
+            %% for the key propopsals in ledger v1
+            case BlockHeight rem 101 == 0 of
                 true ->
                     ok = purge_local_poc_keys(BlockHeight, Ledger, State);
                 false ->
@@ -667,7 +669,7 @@ purge_local_poc_keys(
     CachedPOCKeys = local_poc_keys(State),
     lists:foreach(
         fun([#poc_local_key_data{receive_height = ReceiveHeight, onion_key_hash = Key}]) ->
-            case (BlockHeight - ReceiveHeight) > (POCEphemeralKeyTimeout + POCTimeout) of
+            case BlockHeight > (ReceiveHeight + POCEphemeralKeyTimeout + POCTimeout) of
                 true ->
                     %% the lifespan of any POC for this key has passed, we can GC
                     ok = delete_local_poc_keys(Key, DB, CF);
