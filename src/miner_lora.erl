@@ -624,6 +624,8 @@ handle_packets([Packet|Tail], Gateway, RxInstantLocal_us, #state{reg_region = Re
         {onion, Payload} ->
             Freq = maps:get(<<"freq">>, Packet),
             %% onion server
+            EncodedData = maps:get(<<"data">>, Packet),
+            lager:info("GREPTERM - Got a lora packet?? - ~p", [EncodedData]),
             UseRSSIS = case Chain /= undefined andalso blockchain:config(?poc_version, blockchain:ledger(Chain)) of
                 {ok, X} when X > 10 -> true;
                 _ -> false
