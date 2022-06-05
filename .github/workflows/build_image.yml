@@ -3,7 +3,7 @@ name: Compile Docker Images
 on:
   push:
     tags:
-      - '*GA*'
+      - '**GA**'
 jobs:
   start-runner:
     name: Start self-hosted EC2 runner
@@ -130,5 +130,3 @@ jobs:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           label: ${{ needs.start-runner.outputs.label }}
           ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
-
-  
