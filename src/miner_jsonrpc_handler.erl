@@ -60,6 +60,8 @@ handle_rpc_(<<"sc_", _/binary>> = Method, Params) ->
     miner_jsonrpc_sc:handle_rpc(Method, Params);
 handle_rpc_(<<"peer_", _/binary>> = Method, Params) ->
     miner_jsonrpc_peer:handle_rpc(Method, Params);
+handle_rpc_(<<"poc_", _/binary>> = Method, Params) ->
+    miner_jsonrpc_poc:handle_rpc(Method, Params);
 handle_rpc_(_, _) ->
     ?jsonrpc_error(method_not_found).
 

@@ -11,7 +11,6 @@
 handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
     try
         lager:info("Request received to get PoC - ~p", [DataPacket]),
-
         BinaryData = base64:decode(DataPacket),
         lager:info("Packet converted to binary"),
     
@@ -19,19 +18,16 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
 
             {ok, Payload} ->
 
-                lager:info("Inner Payload - ~p", [DataPacket]),
-
+                lager:info("Inner Payload - ~p", [Payload]),
                 <<IV:2/binary, OnionCompactKey:33/binary, Tag:4/binary, CipherText/binary>> = Payload,
-                lager:info("Post bit manip - ~p", [DataPacket]),
 
                 POCID = blockchain_utils:poc_id(OnionCompactKey),
-                lager:info("Gotten the POCID - ~p", [DataPacket]),
+                lager:info("Gotten the POCID - ~p", [POCID]),
 
                 OnionKeyHash = crypto:hash(sha256, OnionCompactKey),
-                lager:info("Getting Blockchain - ~p", [DataPacket]),
+                lager:info("Getting Blockchain - ~p", [OnionCompactKey]),
                 BlockChain = blockchain_worker:blockchain(),
                 Ledger = blockchain:ledger(BlockChain),
-                lager:info("Looking it up - ~p", [DataPacket]),
                 case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
                     {error, not_found} ->
                         lager:error("Not found - ~p", [DataPacket]),
