@@ -63,7 +63,7 @@ handle_rpc(_, _) ->
 %%%===================================================================
 
 get_payload(BinaryData) ->
-    case miner_lora:route(BinaryData) of
+    case miner_lora_light:route(BinaryData) of
         error ->
             lager:error("Failed to deserialise the packet", []),
             {error, failure};
