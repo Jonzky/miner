@@ -26,7 +26,8 @@
     handle_cast/2,
     handle_info/2,
     terminate/2,
-    code_change/3
+    code_change/3,
+    route/1
 ]).
 
 -include_lib("helium_proto/include/blockchain_state_channel_v1_pb.hrl").
