@@ -87,14 +87,14 @@ jobs:
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
-          cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/debug-helium-miner:buildcache,mode=max
           build-args: |
             VERSION=${{steps.tag.outputs.tag}}
             EXTRA_BUILD_APK_PACKAGES=apk-tools
             EXTRA_RUNNER_APK_PACKAGES=apk-tools
             BUILDER_IMAGE=arm64v8/erlang:24-alpine
-            RUNNER_IMAGE=arm64v8/alpine:3.15
+            RUNNER_IMAGE=arm64v8/alpine:3.16
             REBAR_BUILD_TARGET=docker
             BUILD_NET=mainnet
 
