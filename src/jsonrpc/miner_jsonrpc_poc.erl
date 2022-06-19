@@ -28,13 +28,13 @@ handle_rpc(<<"poc_find">>, #{ <<"key">> := DataPacket }) ->
                 lager:info("Getting Blockchain - ~p", [OnionCompactKey]),
                 Ledger = blockchain:ledger(blockchain_worker:blockchain()),
                 lager:info("Got Blockchain - ~p", [OnionCompactKey]),
-                case blockchain_ledger_v1:find_pocs(OnionKeyHash, Ledger) of
+                case blockchain_ledger_v1:find_public_poc(OnionKeyHash, Ledger) of
                     {error, not_found} ->
                         lager:error("Not found - ~p", [DataPacket]),
                         not_found;
-                    {ok, [PoC]} ->
-                        lager:info([{POCID}], "found poc. attempting to decrypt", []),
-                        Challenger = blockchain_ledger_poc_v2:challenger(PoC),
+                    {ok, PoC} ->
+                        lager:info("POC Found - getting the challanger"),
+                        Challenger = blockchain_ledger_poc_v3:challenger(PoC),
                         P2P = libp2p_crypto:pubkey_bin_to_p2p(Challenger),
                         #{ <<"result">> => P2P };
                     {ok, _} ->
