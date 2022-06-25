@@ -8,7 +8,7 @@
  {<<"base64url">>,{pkg,<<"base64url">>,<<"1.0.1">>},1},
  {<<"blockchain">>,
   {git,"https://github.com/Jonzky/blockchain-core.git",
-       {ref,"7e1af199995d9266b02cb7f87bdb8425a7872ce4"}},
+       {ref,"9d2b8a2f25bfb7cd8614fa0eb8b34c8046925c46"}},
   0},
  {<<"certifi">>,{pkg,<<"certifi">>,<<"2.8.0">>},2},
  {<<"chatterbox">>,
